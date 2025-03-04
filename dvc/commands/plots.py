@@ -4,9 +4,9 @@ from typing import TYPE_CHECKING, Dict, List, Optional
 
 from funcy import compact, first, get_in
 
-from dvc.cli import completion
+from dvc.cli import completion, formatter
 from dvc.cli.command import CmdBase
-from dvc.cli.utils import append_doc_link, fix_subparsers
+from dvc.cli.utils import append_doc_link
 from dvc.exceptions import DvcException
 from dvc.log import logger
 from dvc.ui import ui
@@ -223,14 +223,13 @@ def add_parser(subparsers, parent_parser):
         parents=[parent_parser],
         description=append_doc_link(PLOTS_HELP, "plots"),
         help=PLOTS_HELP,
-        formatter_class=argparse.RawDescriptionHelpFormatter,
+        formatter_class=formatter.RawDescriptionHelpFormatter,
     )
     plots_subparsers = plots_parser.add_subparsers(
         dest="cmd",
         help="Use `dvc plots CMD --help` to display command-specific help.",
+        required=True,
     )
-
-    fix_subparsers(plots_subparsers)
 
     SHOW_HELP = (
         "Generate plots from target files or from `plots` definitions in `dvc.yaml`."
@@ -240,7 +239,7 @@ def add_parser(subparsers, parent_parser):
         parents=[parent_parser],
         description=append_doc_link(SHOW_HELP, "plots/show"),
         help=SHOW_HELP,
-        formatter_class=argparse.RawDescriptionHelpFormatter,
+        formatter_class=formatter.RawDescriptionHelpFormatter,
     )
     plots_show_parser.add_argument(
         "targets",
@@ -263,7 +262,7 @@ def add_parser(subparsers, parent_parser):
         parents=[parent_parser],
         description=append_doc_link(PLOTS_DIFF_HELP, "plots/diff"),
         help=PLOTS_DIFF_HELP,
-        formatter_class=argparse.RawDescriptionHelpFormatter,
+        formatter_class=formatter.RawDescriptionHelpFormatter,
     )
     plots_diff_parser.add_argument(
         "--targets",
@@ -299,7 +298,7 @@ def add_parser(subparsers, parent_parser):
         parents=[parent_parser],
         description=append_doc_link(PLOTS_MODIFY_HELP, "plots/modify"),
         help=PLOTS_MODIFY_HELP,
-        formatter_class=argparse.RawDescriptionHelpFormatter,
+        formatter_class=formatter.RawDescriptionHelpFormatter,
     )
     plots_modify_parser.add_argument(
         "target",
@@ -320,7 +319,7 @@ def add_parser(subparsers, parent_parser):
         parents=[parent_parser],
         description=append_doc_link(TEMPLATES_HELP, "plots/templates"),
         help=TEMPLATES_HELP,
-        formatter_class=argparse.RawDescriptionHelpFormatter,
+        formatter_class=formatter.RawDescriptionHelpFormatter,
     )
     plots_templates_parser.add_argument(
         "template",
