@@ -169,7 +169,7 @@ def _load_data_from_outs(index, prefix, outs):
             key=key,
             meta=out.meta,
             hash_info=out.hash_info,
-            loaded=tree is not None,
+            loaded=None if tree is None else True,
         )
 
         if (
