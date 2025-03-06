@@ -1,8 +1,6 @@
-import argparse
-
-from dvc.cli import completion
+from dvc.cli import completion, formatter
 from dvc.cli.command import CmdBase
-from dvc.cli.utils import append_doc_link, fix_subparsers
+from dvc.cli.utils import append_doc_link
 from dvc.log import logger
 from dvc.ui import ui
 from dvc.utils.serialize import encode_exception
@@ -107,15 +105,14 @@ def add_parser(subparsers, parent_parser):
         parents=[parent_parser],
         description=append_doc_link(METRICS_HELP, "metrics"),
         help=METRICS_HELP,
-        formatter_class=argparse.RawDescriptionHelpFormatter,
+        formatter_class=formatter.RawDescriptionHelpFormatter,
     )
 
     metrics_subparsers = metrics_parser.add_subparsers(
         dest="cmd",
         help="Use `dvc metrics CMD --help` to display command-specific help.",
+        required=True,
     )
-
-    fix_subparsers(metrics_subparsers)
 
     METRICS_SHOW_HELP = "Print metrics, with optional formatting."
     metrics_show_parser = metrics_subparsers.add_parser(
@@ -123,7 +120,7 @@ def add_parser(subparsers, parent_parser):
         parents=[parent_parser],
         description=append_doc_link(METRICS_SHOW_HELP, "metrics/show"),
         help=METRICS_SHOW_HELP,
-        formatter_class=argparse.RawDescriptionHelpFormatter,
+        formatter_class=formatter.RawDescriptionHelpFormatter,
     )
     metrics_show_parser.add_argument(
         "targets",
@@ -197,7 +194,7 @@ def add_parser(subparsers, parent_parser):
         parents=[parent_parser],
         description=append_doc_link(METRICS_DIFF_HELP, "metrics/diff"),
         help=METRICS_DIFF_HELP,
-        formatter_class=argparse.RawDescriptionHelpFormatter,
+        formatter_class=formatter.RawDescriptionHelpFormatter,
     )
     metrics_diff_parser.add_argument(
         "a_rev",
