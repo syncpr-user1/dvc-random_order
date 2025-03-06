@@ -1,7 +1,5 @@
 import logging
-import re
 from argparse import SUPPRESS, ArgumentParser
-from itertools import takewhile
 from typing import Tuple
 
 import pytest
@@ -30,7 +28,7 @@ def command_tuples():
 
     # the no. of commands will usually go up,
     # but if we ever remove commands and drop below, adjust the magic number accordingly
-    assert len(commands) >= 112
+    assert len(commands) >= 96
     return sorted(commands)
 
 
@@ -46,19 +44,5 @@ def test_help(caplog, capsys, command_tuples):
     assert not caplog.text
 
     out, err = capsys.readouterr()
-
-    # validate metavars are all in lowercase
-    usage = "\n".join(takewhile(lambda o: bool(o), out.splitlines()))
-
-    message = (
-        "metavars not lowercased, you are likely missing formatter_class=XXX "
-        "in the command, where XXX should be any of the classes from "
-        "`dvc.cli.formatter`, which automatically lowercases metavars.\n"
-        "\nExample:\n"
-        "\nfrom dvc.cli import formatter\n"
-        "\nparser.add_parser(..., formatter_class=formatter.TextHelpFormatter)\n"
-    )
-    assert not re.findall(r"\b[A-Z]{2,}\b", usage, re.MULTILINE), message
-
     assert not err
     assert out

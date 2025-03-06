@@ -116,28 +116,6 @@ def collect_files(
         dirs[:] = [d for d in dirs if not is_out_or_ignored(root, d)]
 
 
-def _load_data_from_tree(index, prefix, ws, key, tree):
-    from dvc_data.index import DataIndexEntry, Meta
-
-    parents = set()
-
-    for okey, ometa, ohi in tree:
-        for key_len in range(1, len(okey)):
-            parents.add((*key, *okey[:key_len]))
-
-        fkey = (*key, *okey)
-        index[(*prefix, ws, *fkey)] = DataIndexEntry(
-            key=fkey,
-            meta=ometa,
-            hash_info=ohi,
-        )
-
-    for parent in parents:
-        index[(*prefix, ws, *parent)] = DataIndexEntry(
-            key=parent, meta=Meta(isdir=True), loaded=True
-        )
-
-
 def _load_data_from_outs(index, prefix, outs):
     from dvc_data.index import DataIndexEntry, Meta
 
@@ -151,25 +129,25 @@ def _load_data_from_outs(index, prefix, outs):
         for key_len in range(1, len(key)):
             parents.add((ws, key[:key_len]))
 
-        tree = None
-        if (
-            out.stage.is_import
-            and not out.stage.is_repo_import
-            and not out.stage.is_db_import
-            and out.stage.deps[0].files
-        ):
-            tree = out.stage.deps[0].get_obj()
-        elif out.files:
-            tree = out.get_obj()
+        loaded = None
+        if out.files:
+            loaded = True
+            for okey, ometa, ohi in out.get_obj():
+                for key_len in range(1, len(okey)):
+                    parents.add((ws, (*key, *okey[:key_len])))
 
-        if tree is not None:
-            _load_data_from_tree(index, prefix, ws, key, tree)
+                fkey = (*key, *okey)
+                index[(*prefix, ws, *fkey)] = DataIndexEntry(
+                    key=fkey,
+                    meta=ometa,
+                    hash_info=ohi,
+                )
 
         entry = DataIndexEntry(
             key=key,
             meta=out.meta,
             hash_info=out.hash_info,
-            loaded=None if tree is None else True,
+            loaded=loaded,
         )
 
         if (
@@ -194,32 +172,6 @@ def _load_data_from_outs(index, prefix, outs):
         index[(*prefix, ws, *key)] = DataIndexEntry(
             key=key, meta=Meta(isdir=True), loaded=True
         )
-
-
-def _load_storage_from_import(storage_map, key, out):
-    from fsspec.utils import tokenize
-
-    from dvc_data.index import FileStorage
-
-    if out.stage.is_db_import:
-        return
-
-    dep = out.stage.deps[0]
-    if not out.hash_info and (
-        not dep.hash_info or dep.hash_info.name != storage_map[key].cache.odb.hash_name
-    ):
-        # partial import
-        fs_cache = out.repo.cache.fs_cache
-        storage_map.add_cache(
-            FileStorage(
-                key,
-                fs_cache.fs,
-                fs_cache.fs.join(fs_cache.path, dep.fs.protocol, tokenize(dep.fs_path)),
-            )
-        )
-
-    if out.stage.is_repo_import or not out.hash_info or dep.fs.version_aware:
-        storage_map.add_remote(FileStorage(key, dep.fs, dep.fs_path, read_only=True))
 
 
 def _load_storage_from_out(storage_map, key, out):
@@ -253,35 +205,29 @@ def _load_storage_from_out(storage_map, key, out):
     except NoRemoteError:
         pass
 
-    if out.stage.is_import:
-        _load_storage_from_import(storage_map, key, out)
+    if not out.stage.is_import or out.stage.is_db_import:
+        return
 
+    dep = out.stage.deps[0]
+    if out.stage.is_repo_import:
+        storage_map.add_remote(FileStorage(key, dep.fs, dep.fs_path, read_only=True))
+        return
 
-def _build_tree_from_outs(outs):
-    from dvc_data.hashfile.tree import Tree
+    if out.hash_info:
+        return
 
-    tree = Tree()
-    for out in outs:
-        if not out.use_cache:
-            continue
+    from fsspec.utils import tokenize
 
-        ws, key = out.index_key
-
-        if not out.stage.is_partial_import:
-            tree.add((ws, *key), out.meta, out.hash_info)
-            continue
-
-        dep = out.stage.deps[0]
-        if not dep.files:
-            tree.add((ws, *key), dep.meta, dep.hash_info)
-            continue
-
-        for okey, ometa, ohi in dep.get_obj():
-            tree.add((ws, *key, *okey), ometa, ohi)
-
-    tree.digest()
-
-    return tree
+    # partial import
+    fs_cache = out.repo.cache.fs_cache
+    storage_map.add_cache(
+        FileStorage(
+            key,
+            fs_cache.fs,
+            fs_cache.fs.join(fs_cache.path, dep.fs.protocol, tokenize(dep.fs_path)),
+        )
+    )
+    storage_map.add_remote(FileStorage(key, dep.fs, dep.fs_path, read_only=True))
 
 
 class Index:
@@ -533,7 +479,20 @@ class Index:
 
     @cached_property
     def data_tree(self):
-        return _build_tree_from_outs(self.outs)
+        from dvc_data.hashfile.tree import Tree
+
+        tree = Tree()
+        for out in self.outs:
+            if not out.use_cache:
+                continue
+
+            ws, key = out.index_key
+
+            tree.add((ws, *key), out.meta, out.hash_info)
+
+        tree.digest()
+
+        return tree
 
     @cached_property
     def data(self) -> "Dict[str, DataIndex]":
@@ -788,7 +747,20 @@ class IndexView:
 
     @cached_property
     def data_tree(self):
-        return _build_tree_from_outs(self.outs)
+        from dvc_data.hashfile.tree import Tree
+
+        tree = Tree()
+        for out in self.outs:
+            if not out.use_cache:
+                continue
+
+            ws, key = out.index_key
+
+            tree.add((ws, *key), out.meta, out.hash_info)
+
+        tree.digest()
+
+        return tree
 
     @cached_property
     def data(self) -> Dict[str, Union["DataIndex", "DataIndexView"]]:

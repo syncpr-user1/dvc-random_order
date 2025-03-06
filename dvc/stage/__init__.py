@@ -286,17 +286,17 @@ class Stage(params.StageParams):
         if not self.is_import:
             return False
 
-        from dvc.dependency import DbDependency
+        from dvc.dependency import DbDependency, DbtDependency
 
-        return isinstance(self.deps[0], DbDependency)
+        return isinstance(self.deps[0], (DbDependency, DbtDependency))
 
     @property
     def is_versioned_import(self) -> bool:
-        from dvc.dependency import DbDependency
+        from dvc.dependency import DbDependency, DbtDependency
 
         return (
             self.is_import
-            and not isinstance(self.deps[0], DbDependency)
+            and not isinstance(self.deps[0], (DbDependency, DbtDependency))
             and self.deps[0].fs.version_aware
         )
 
@@ -462,7 +462,7 @@ class Stage(params.StageParams):
         if not (self.is_repo_import or self.is_import):
             raise StageUpdateError(self.relpath)
 
-        # always force update DbDep since we don't know if it's changed
+        # always force update DbDep/DbtDep since we don't know if it's changed
         force = self.is_db_import
         update_import(
             self,
@@ -613,7 +613,7 @@ class Stage(params.StageParams):
         ) or self.is_partial_import:
             self._sync_import(dry, force, kwargs.get("jobs", None), no_download)
         elif not self.frozen and self.cmd:
-            self._run_stage(dry, force, **kwargs)
+            self._run_stage(dry, force, allow_missing=allow_missing, **kwargs)
         elif kwargs.get("pull"):
             logger.info("Pulling data for %s", self)
             self.repo.pull(self.addressing, jobs=kwargs.get("jobs", None))

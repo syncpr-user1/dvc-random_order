@@ -57,7 +57,9 @@ class Formatter:
         }
         self.theme = defaultdict(lambda: defaults or {}, theme)
 
-    def format(self, message: str, style: Optional[str] = None, **kwargs) -> str:
+    def format(  # noqa: A003
+        self, message: str, style: Optional[str] = None, **kwargs
+    ) -> str:
         from dvc.utils import colorize
 
         return colorize(message, **self.theme[style])

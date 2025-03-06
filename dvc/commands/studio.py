@@ -1,9 +1,9 @@
+import argparse
 import os
 
 from funcy import get_in
 
-from dvc.cli import formatter
-from dvc.cli.utils import append_doc_link
+from dvc.cli.utils import append_doc_link, fix_subparsers
 from dvc.commands.config import CmdConfig
 from dvc.log import logger
 
@@ -92,13 +92,13 @@ def add_parser(subparsers, parent_parser):
         parents=[parent_parser],
         description=append_doc_link(STUDIO_DESCRIPTION, "studio"),
         help=STUDIO_HELP,
-        formatter_class=formatter.RawDescriptionHelpFormatter,
+        formatter_class=argparse.RawDescriptionHelpFormatter,
     )
     studio_subparser = studio_parser.add_subparsers(
         dest="cmd",
         help="Use `DVC studio CMD --help` to display command-specific help.",
-        required=True,
     )
+    fix_subparsers(studio_subparser)
 
     STUDIO_LOGIN_HELP = "Authenticate DVC with Studio host"
     STUDIO_LOGIN_DESCRIPTION = (
@@ -110,7 +110,7 @@ def add_parser(subparsers, parent_parser):
         parents=[parent_parser],
         description=append_doc_link(STUDIO_LOGIN_DESCRIPTION, "studio/login"),
         help=STUDIO_LOGIN_HELP,
-        formatter_class=formatter.RawDescriptionHelpFormatter,
+        formatter_class=argparse.RawDescriptionHelpFormatter,
     )
 
     login_parser.add_argument(
@@ -157,7 +157,7 @@ def add_parser(subparsers, parent_parser):
         parents=[parent_parser],
         description=append_doc_link(STUDIO_LOGOUT_DESCRIPTION, "studio/logout"),
         help=STUDIO_LOGOUT_HELP,
-        formatter_class=formatter.RawDescriptionHelpFormatter,
+        formatter_class=argparse.RawDescriptionHelpFormatter,
     )
 
     logout_parser.set_defaults(func=CmdStudioLogout)
@@ -169,7 +169,7 @@ def add_parser(subparsers, parent_parser):
         parents=[parent_parser],
         description=append_doc_link(STUDIO_TOKEN_HELP, "studio/token"),
         help=STUDIO_TOKEN_HELP,
-        formatter_class=formatter.RawDescriptionHelpFormatter,
+        formatter_class=argparse.RawDescriptionHelpFormatter,
     )
 
     logout_parser.set_defaults(func=CmdStudioToken)

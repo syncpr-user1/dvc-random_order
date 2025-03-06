@@ -1,4 +1,5 @@
-from dvc.cli import formatter
+import argparse
+
 from dvc.cli.command import CmdBase
 from dvc.cli.utils import append_doc_link
 from dvc.log import logger
@@ -48,7 +49,7 @@ def add_parser(experiments_subparsers, parent_parser):
         parents=[parent_parser],
         description=append_doc_link(EXPERIMENTS_PULL_HELP, "exp/pull"),
         help=EXPERIMENTS_PULL_HELP,
-        formatter_class=formatter.RawDescriptionHelpFormatter,
+        formatter_class=argparse.RawDescriptionHelpFormatter,
     )
     add_rev_selection_flags(experiments_pull_parser, "Pull", True)
     experiments_pull_parser.add_argument(

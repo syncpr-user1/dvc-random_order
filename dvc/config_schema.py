@@ -260,9 +260,9 @@ SCHEMA = {
                     "exclude_shared_token_cache_credential": Bool,
                     "exclude_managed_identity_credential": Bool,
                     Optional("verify", default=False): Bool,
-                    "timeout": Coerce(int),
-                    "read_timeout": Coerce(int),
-                    "connection_timeout": Coerce(int),
+                    "timeout": int,
+                    "read_timeout": int,
+                    "connection_timeout": int,
                     **REMOTE_COMMON,
                 },
                 "oss": {
@@ -321,6 +321,8 @@ SCHEMA = {
     "feature": FeatureSchema(
         {
             Optional("machine", default=False): Bool,
+            "dbt_profile": str,
+            "dbt_target": str,
         },
     ),
     "plots": {
@@ -346,7 +348,6 @@ SCHEMA = {
         Exclusive("config_dir", "config_source"): str,
         Exclusive("config_module", "config_source"): str,
         "config_name": str,
-        "plugins_path": str,
     },
     "studio": {
         "token": str,

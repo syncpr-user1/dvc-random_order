@@ -306,7 +306,7 @@ class Repo:
             new.check_graph()
 
     @staticmethod
-    def open(url: Optional[str], *args, **kwargs) -> "Repo":
+    def open(url: Optional[str], *args, **kwargs) -> "Repo":  # noqa: A003
         from .open_repo import open_repo
 
         return open_repo(url, *args, **kwargs)

@@ -112,14 +112,14 @@ class SerializableExp:
 
 @dataclass(frozen=True)
 class ExpDep:
-    hash: Optional[str]
+    hash: Optional[str]  # noqa: A003
     size: Optional[int]
     nfiles: Optional[int]
 
 
 @dataclass(frozen=True)
 class ExpOut:
-    hash: Optional[str]
+    hash: Optional[str]  # noqa: A003
     size: Optional[int]
     nfiles: Optional[int]
     use_cache: bool
@@ -129,7 +129,7 @@ class ExpOut:
 @dataclass(frozen=True)
 class SerializableError:
     msg: str
-    type: str = ""
+    type: str = ""  # noqa: A003
 
     def dumpd(self) -> Dict[str, Any]:
         return asdict(self)

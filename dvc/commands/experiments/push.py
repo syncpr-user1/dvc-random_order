@@ -1,6 +1,7 @@
+import argparse
 from typing import Any, Dict
 
-from dvc.cli import completion, formatter
+from dvc.cli import completion
 from dvc.cli.command import CmdBase
 from dvc.cli.utils import append_doc_link
 from dvc.log import logger
@@ -89,7 +90,7 @@ def add_parser(experiments_subparsers, parent_parser):
         parents=[parent_parser],
         description=append_doc_link(EXPERIMENTS_PUSH_HELP, "exp/push"),
         help=EXPERIMENTS_PUSH_HELP,
-        formatter_class=formatter.RawDescriptionHelpFormatter,
+        formatter_class=argparse.RawDescriptionHelpFormatter,
     )
     add_rev_selection_flags(experiments_push_parser, "Push", True)
     experiments_push_parser.add_argument(

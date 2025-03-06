@@ -1,4 +1,6 @@
-from dvc.cli import completion, formatter
+import argparse
+
+from dvc.cli import completion
 from dvc.cli.command import CmdBase
 from dvc.cli.utils import append_doc_link
 from dvc.log import logger
@@ -69,7 +71,7 @@ def add_parser(subparsers, parent_parser):
         parents=[parent_parser],
         description=append_doc_link(ADD_HELP, "add"),
         help=ADD_HELP,
-        formatter_class=formatter.RawDescriptionHelpFormatter,
+        formatter_class=argparse.RawDescriptionHelpFormatter,
     )
     parser.add_argument(
         "--no-commit",

@@ -1,4 +1,5 @@
-from dvc.cli import formatter
+import argparse
+
 from dvc.cli.command import CmdBaseNoRepo
 from dvc.cli.utils import DictAction, append_doc_link
 from dvc.log import logger
@@ -32,7 +33,7 @@ def add_parser(subparsers, parent_parser):
         parents=[parent_parser],
         description=append_doc_link(LS_HELP, "list-url"),
         help=LS_HELP,
-        formatter_class=formatter.RawDescriptionHelpFormatter,
+        formatter_class=argparse.RawDescriptionHelpFormatter,
     )
     lsurl_parser.add_argument(
         "url", help="See `dvc import-url -h` for full list of supported URLs."

@@ -1,4 +1,6 @@
-from dvc.cli import completion, formatter
+import argparse
+
+from dvc.cli import completion
 from dvc.cli.command import CmdBase
 from dvc.cli.utils import append_doc_link
 from dvc.exceptions import DvcException
@@ -36,7 +38,7 @@ def add_parser(subparsers, parent_parser):
         parents=[parent_parser],
         description=append_doc_link(UPDATE_HELP, "update"),
         help=UPDATE_HELP,
-        formatter_class=formatter.RawDescriptionHelpFormatter,
+        formatter_class=argparse.RawDescriptionHelpFormatter,
     )
     update_parser.add_argument(
         "targets", nargs="+", help=".dvc files to update."

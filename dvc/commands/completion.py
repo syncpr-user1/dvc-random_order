@@ -1,4 +1,5 @@
-from dvc.cli import formatter
+import argparse
+
 from dvc.cli.command import CmdBaseNoRepo
 from dvc.cli.completion import PREAMBLE
 from dvc.cli.utils import append_doc_link
@@ -30,7 +31,7 @@ def add_parser(subparsers, parent_parser):
         parents=[parent_parser],
         description=append_doc_link(COMPLETION_DESCRIPTION, "completion"),
         help=COMPLETION_HELP,
-        formatter_class=formatter.RawDescriptionHelpFormatter,
+        formatter_class=argparse.RawDescriptionHelpFormatter,
     )
     completion_parser.add_argument(
         "-s",

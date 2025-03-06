@@ -1,6 +1,6 @@
+import argparse
 import os
 
-from dvc.cli import formatter
 from dvc.cli.command import CmdBase
 from dvc.cli.utils import append_doc_link
 from dvc.log import logger
@@ -102,7 +102,7 @@ def add_parser(subparsers, parent_parser):
         parents=[parent_parser],
         description=append_doc_link(GC_DESCRIPTION, "gc"),
         help=GC_HELP,
-        formatter_class=formatter.RawDescriptionHelpFormatter,
+        formatter_class=argparse.RawDescriptionHelpFormatter,
     )
     gc_parser.add_argument(
         "-w",
@@ -156,12 +156,12 @@ def add_parser(subparsers, parent_parser):
         "--date",
         type=str,
         dest="commit_date",
-        metavar="<yyyy-mm-dd>",
+        metavar="<YYYY-MM-DD>",
         default=None,
         help=(
             "Keep cached data referenced in the commits after ( inclusive )"
             " a certain time. Date must match the extended ISO 8601 format "
-            "(yyyy-mm-dd)."
+            "(YYYY-MM-DD)."
         ),
     )
     gc_parser.add_argument(

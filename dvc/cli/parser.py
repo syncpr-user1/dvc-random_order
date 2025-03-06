@@ -50,7 +50,7 @@ from dvc.commands import (
 )
 from dvc.log import logger
 
-from . import DvcParserError, formatter
+from . import DvcParserError
 
 logger = logger.getChild(__name__)
 
@@ -165,7 +165,7 @@ def get_main_parser():
         prog="dvc",
         description=desc,
         parents=[parent_parser],
-        formatter_class=formatter.RawTextHelpFormatter,
+        formatter_class=argparse.RawTextHelpFormatter,
         add_help=False,
     )
 
@@ -200,11 +200,14 @@ def get_main_parser():
     # Sub commands
     subparsers = parser.add_subparsers(
         title="Available Commands",
-        metavar="command",
+        metavar="COMMAND",
         dest="cmd",
-        help="Use `dvc command --help` for command-specific help.",
-        required=True,
+        help="Use `dvc COMMAND --help` for command-specific help.",
     )
+
+    from .utils import fix_subparsers
+
+    fix_subparsers(subparsers)
 
     for cmd in COMMANDS:
         cmd.add_parser(subparsers, parent_parser)

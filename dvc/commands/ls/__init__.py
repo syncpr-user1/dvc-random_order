@@ -1,4 +1,6 @@
-from dvc.cli import completion, formatter
+import argparse
+
+from dvc.cli import completion
 from dvc.cli.command import CmdBaseNoRepo
 from dvc.cli.utils import DictAction, append_doc_link
 from dvc.commands.ls.ls_colors import LsColors
@@ -73,7 +75,7 @@ def add_parser(subparsers, parent_parser):
         parents=[parent_parser],
         description=append_doc_link(LIST_HELP, "list"),
         help=LIST_HELP,
-        formatter_class=formatter.RawTextHelpFormatter,
+        formatter_class=argparse.RawTextHelpFormatter,
     )
     list_parser.add_argument("url", help="Location of DVC repository to list")
     list_parser.add_argument(

@@ -1,4 +1,5 @@
-from dvc.cli import formatter
+import argparse
+
 from dvc.cli.command import CmdBase
 from dvc.cli.utils import append_doc_link
 from dvc.exceptions import InvalidArgumentError
@@ -61,7 +62,7 @@ def add_parser(queue_subparsers, parent_parser):
         parents=[parent_parser],
         description=append_doc_link(QUEUE_REMOVE_HELP, "queue/remove"),
         help=QUEUE_REMOVE_HELP,
-        formatter_class=formatter.RawDescriptionHelpFormatter,
+        formatter_class=argparse.RawDescriptionHelpFormatter,
     )
     queue_remove_parser.add_argument(
         "--all",

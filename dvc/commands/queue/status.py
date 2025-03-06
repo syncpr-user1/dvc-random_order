@@ -1,4 +1,5 @@
-from dvc.cli import formatter
+import argparse
+
 from dvc.cli.command import CmdBase
 from dvc.cli.utils import append_doc_link
 from dvc.compare import TabularData
@@ -51,6 +52,6 @@ def add_parser(queue_subparsers, parent_parser):
         parents=[parent_parser],
         description=append_doc_link(QUEUE_STATUS_HELP, "queue/status"),
         help=QUEUE_STATUS_HELP,
-        formatter_class=formatter.RawDescriptionHelpFormatter,
+        formatter_class=argparse.RawDescriptionHelpFormatter,
     )
     queue_status_parser.set_defaults(func=CmdQueueStatus)

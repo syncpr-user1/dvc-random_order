@@ -1,6 +1,8 @@
-from dvc.cli import completion, formatter
+import argparse
+
+from dvc.cli import completion
 from dvc.cli.command import CmdBaseNoRepo
-from dvc.cli.utils import DictAction, append_doc_link
+from dvc.cli.utils import DictAction, append_doc_link, fix_subparsers
 from dvc.exceptions import DvcException
 from dvc.log import logger
 
@@ -45,13 +47,13 @@ def add_parser(subparsers, parent_parser):
         parents=[parent_parser],
         description=append_doc_link(ARTIFACTS_HELP, "artifacts"),
         help=ARTIFACTS_HELP,
-        formatter_class=formatter.RawDescriptionHelpFormatter,
+        formatter_class=argparse.RawDescriptionHelpFormatter,
     )
     artifacts_subparsers = artifacts_parser.add_subparsers(
         dest="cmd",
         help="Use `dvc artifacts CMD --help` to display command-specific help.",
-        required=True,
     )
+    fix_subparsers(artifacts_subparsers)
 
     ARTIFACTS_GET_HELP = "Download an artifact from a DVC project."
     get_parser = artifacts_subparsers.add_parser(
@@ -59,7 +61,7 @@ def add_parser(subparsers, parent_parser):
         parents=[parent_parser],
         description=append_doc_link(ARTIFACTS_GET_HELP, "artifacts/get"),
         help=ARTIFACTS_HELP,
-        formatter_class=formatter.RawDescriptionHelpFormatter,
+        formatter_class=argparse.RawDescriptionHelpFormatter,
     )
     get_parser.add_argument("url", help="Location of DVC repository to download from")
     get_parser.add_argument(

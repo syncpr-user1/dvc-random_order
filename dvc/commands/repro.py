@@ -1,4 +1,6 @@
-from dvc.cli import completion, formatter
+import argparse
+
+from dvc.cli import completion
 from dvc.cli.command import CmdBase
 from dvc.cli.utils import append_doc_link
 from dvc.commands.status import CmdDataStatus
@@ -165,7 +167,7 @@ def add_parser(subparsers, parent_parser):
         parents=[parent_parser],
         description=append_doc_link(REPRO_HELP, "repro"),
         help=REPRO_HELP,
-        formatter_class=formatter.RawDescriptionHelpFormatter,
+        formatter_class=argparse.RawDescriptionHelpFormatter,
     )
     # repro/exp run shared args
     add_arguments(repro_parser)

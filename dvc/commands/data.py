@@ -1,10 +1,10 @@
+import argparse
 from typing import TYPE_CHECKING
 
 from funcy import chunks, compact, log_durations
 
-from dvc.cli import formatter
 from dvc.cli.command import CmdBase
-from dvc.cli.utils import append_doc_link
+from dvc.cli.utils import append_doc_link, fix_subparsers
 from dvc.log import logger
 from dvc.ui import ui
 from dvc.utils import colorize
@@ -129,13 +129,13 @@ def add_parser(subparsers, parent_parser):
     data_parser = subparsers.add_parser(
         "data",
         parents=[parent_parser],
-        formatter_class=formatter.RawDescriptionHelpFormatter,
+        formatter_class=argparse.RawDescriptionHelpFormatter,
     )
     data_subparsers = data_parser.add_subparsers(
         dest="cmd",
         help="Use `dvc data CMD --help` to display command-specific help.",
-        required=True,
     )
+    fix_subparsers(data_subparsers)
 
     DATA_STATUS_HELP = (
         "Show changes between the last git commit, the dvcfiles and the workspace."
@@ -144,7 +144,7 @@ def add_parser(subparsers, parent_parser):
         "status",
         parents=[parent_parser],
         description=append_doc_link(DATA_STATUS_HELP, "data/status"),
-        formatter_class=formatter.RawDescriptionHelpFormatter,
+        formatter_class=argparse.RawDescriptionHelpFormatter,
         help=DATA_STATUS_HELP,
     )
     data_status_parser.add_argument(

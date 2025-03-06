@@ -5,7 +5,6 @@ from typing import TYPE_CHECKING, Dict, Iterable
 
 from funcy import lmap
 
-from dvc.cli import formatter
 from dvc.cli.command import CmdBase
 from dvc.cli.utils import append_doc_link
 from dvc.commands.metrics import DEFAULT_PRECISION
@@ -201,7 +200,7 @@ def add_parser(experiments_subparsers, parent_parser):
         parents=[parent_parser],
         description=append_doc_link(EXPERIMENTS_SHOW_HELP, "exp/show"),
         help=EXPERIMENTS_SHOW_HELP,
-        formatter_class=formatter.RawDescriptionHelpFormatter,
+        formatter_class=argparse.RawDescriptionHelpFormatter,
     )
     add_rev_selection_flags(experiments_show_parser, "Show")
     experiments_show_parser.add_argument(
